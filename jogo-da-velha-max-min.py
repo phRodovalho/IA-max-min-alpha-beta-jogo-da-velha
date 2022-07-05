@@ -1,4 +1,6 @@
 import time
+fat_dna_pos = 800
+fat_dna_neg = -800
 
 
 class Player:
@@ -41,6 +43,12 @@ def find_computer_obj():
             return player
 
 
+def find_computer2_obj():
+    for player in Player.players:
+        if player.name == 'computer2':
+            return player
+
+
 def find_human_obj():
     for player in Player.players:
         if player.name == 'human':
@@ -77,6 +85,8 @@ def insert_letter(board, letter, position):
                 print('O computador ganhou!')
             elif letter == find_human_obj().letter:
                 print('Você ganhou!')
+            elif letter == find_computer2_obj().letter:
+                print('O computador2 ganhou!')
             play_again()
         return
 
@@ -186,8 +196,25 @@ def human_movement(board, human):
 # add computer2_movement
 
 
+def computer2_movement(board, computer):
+    best_score = fat_dna_pos  # computer2 is max 800
+    best_move = 0
+
+    for key in board.keys():
+        if board[key] == ' ':
+            board[key] = computer.letter
+            score = minimax(board, 0, True)  # alter to true
+            board[key] = ' '
+            if score < best_score:
+                best_score = score
+                best_move = key
+    print('Jogada do computador2:', best_move)
+    insert_letter(board, computer.letter, best_move)
+    return
+
+
 def computer_movement(board, computer):
-    best_score = -800  # computer2 is max 800
+    best_score = fat_dna_neg
     best_move = 0
 
     for key in board.keys():
@@ -210,16 +237,21 @@ def computer_movement(board, computer):
 def minimax(board, depth, is_maximizing):
     computer = find_computer_obj()
     human = find_human_obj()
-
+    computer2 = find_computer2_obj()
     if player_won(board, computer.letter):
         return 1
-    elif player_won(board, human.letter):
-        return -1
     elif check_tie(board):
         return 0
 
+    # verifica se human ou computer2 ta jogando
+    if human != None:
+        if player_won(board, human.letter):
+            return -1
+    elif player_won(board, computer2.letter):
+        return -1
+
     if is_maximizing:
-        best_score = -800
+        best_score = fat_dna_neg
         for key in board.keys():
             if board[key] == ' ':
                 board[key] = computer.letter
@@ -231,10 +263,13 @@ def minimax(board, depth, is_maximizing):
         return best_score
 
     else:
-        best_score = 800
+        best_score = fat_dna_pos
         for key in board.keys():
             if board[key] == ' ':
-                board[key] = human.letter
+                if human != None:
+                    board[key] = human.letter
+                else:
+                    board[key] = computer2.letter
                 # Next move should maximize
                 score = minimax(board, depth + 1, True)
                 board[key] = ' '
@@ -262,33 +297,46 @@ def define_first_player():
         define_first_player()
 
 
-def create_players(config):
-    human = Player('human', 'X')
-    computer = Player('computer', '0')
-
-    if config == 0:
-        human.letter = 'O'
-        computer.letter = 'X'
-
-    return human, computer
-
-
-def main():
-    print('##################################################')
-    print('#                 Jogo da Velha                  #')
-    print('##################################################')
-    print('Na sua rodada, digite o número referente a posição')
-    print('que você deseja jogar, seguindo o mapa abaixo:')
-    print('')
+def define_type_of_game():
+    """
+    if human vs computer -> return True
+    if computer vs computer2 -> return False
+    """
     delay()
-    print(' 1 │ 2 │ 3 ')
-    print('───┼───┼───')
-    print(' 4 │ 5 │ 6 ')
-    print('───┼───┼───')
-    print(' 7 │ 8 │ 9 ')
-    print('')
+    option = int(
+        input('Digite 1 para jogar contra o computador, ou 0 para assistir computador vs computador2: '))
+    if option == 1:
+        print('Human VS Computer')
+        return True
+    elif option == 0:
+        print('Computer VS Computer2')
+        return False
+    else:
+        print('Digite uma opção válida!')
+        define_type_of_game()
 
-    board = create_board()
+
+def create_players(config):
+    """
+    if config = 1 -> human goes first X
+    if config = 0 -> computer goes first X
+    if config = -1 -> computer = X VS computer2 = 0
+    """
+    if config == 1:
+        human = Player('human', 'X')
+        computer = Player('computer', '0')
+        return human, computer
+    elif config == 0:
+        human = Player('human', '0')
+        computer = Player('computer', 'X')
+        return human, computer
+    elif config == -1:
+        computer = Player('computer', 'X')
+        computer2 = Player('computer2', '0')
+        return computer, computer2
+
+
+def human_vs_computer(board):
     human_goes_first = define_first_player()
     print('')
 
@@ -308,6 +356,41 @@ def main():
             computer_movement(board, computer)
             delay()
             human_movement(board, human)
+
+
+def computer_vs_computer(board):
+    computer, computer2 = create_players(-1)
+    print_board(board)
+    while not victory(board):
+        delay()
+        computer_movement(board, computer)
+        delay()
+        computer2_movement(board, computer2)
+
+
+def main():
+    print('##################################################')
+    print('#                 Jogo da Velha                  #')
+    print('##################################################')
+    print('Na sua rodada, digite o número referente a posição')
+    print('que você deseja jogar, seguindo o mapa abaixo:')
+    print('')
+    delay()
+    print(' 1 │ 2 │ 3 ')
+    print('───┼───┼───')
+    print(' 4 │ 5 │ 6 ')
+    print('───┼───┼───')
+    print(' 7 │ 8 │ 9 ')
+    print('')
+
+    board = create_board()
+    type_game = define_type_of_game()
+
+    if type_game:
+        print("computer = X VS computer2 = 0\n")
+        human_vs_computer(board)
+    else:
+        computer_vs_computer(board)
 
 
 if __name__ == '__main__':
