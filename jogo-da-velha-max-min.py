@@ -1,6 +1,6 @@
 import time
-fat_dna_pos = 800
-fat_dna_neg = -800
+fat_dna_pos = 1000
+fat_dna_neg = -1000
 
 
 class Player:
@@ -184,7 +184,10 @@ def check_tie(board):  # check empate
         if board[key] == ' ':
             return False
 
-    return True
+    if victory(board):
+        return False
+    else:
+        return True
 
 
 def human_movement(board, human):
@@ -285,11 +288,11 @@ def define_first_player():
     """
     delay()
     option = int(
-        input('Digite 1 para jogar primeiro, ou 0 para o computador iniciar: '))
+        input('1 - Player joga primeiro;\n2 - Computador joga primeiro;\n Digite uma opção: '))
     if option == 1:
         print('Você é o primeiro a jogar! Boa Sorte!')
         return True
-    elif option == 0:
+    elif option == 2:
         print('O Computador joga primeiro! Boa Sorte!')
         return False
     else:
@@ -304,12 +307,12 @@ def define_type_of_game():
     """
     delay()
     option = int(
-        input('Digite 1 para jogar contra o computador, ou 0 para assistir computador vs computador2: '))
+        input(' 1 - Player vs Computer;\n 2 - Computer vs Computer2;\nDigite uma opção para começar: '))
     if option == 1:
-        print('Human VS Computer')
+        print('\nPlayer VS Computer\n')
         return True
-    elif option == 0:
-        print('Computer VS Computer2')
+    elif option == 2:
+        print('\nComputer VS Computer2\n')
         return False
     else:
         print('Digite uma opção válida!')
@@ -369,10 +372,10 @@ def computer_vs_computer(board):
 
 
 def main():
-    print('##################################################')
-    print('#                 Jogo da Velha                  #')
-    print('##################################################')
-    print('Na sua rodada, digite o número referente a posição')
+    print('_________________________________________________')
+    print('|                 Jogo da Velha                  |')
+    print('|________________________________________________|')
+    print('Para jogar digite o número referente a posição')
     print('que você deseja jogar, seguindo o mapa abaixo:')
     print('')
     delay()
@@ -387,9 +390,9 @@ def main():
     type_game = define_type_of_game()
 
     if type_game:
-        print("computer = X VS computer2 = 0\n")
         human_vs_computer(board)
     else:
+        print("Computer = X VS Computer2 = 0\n")
         computer_vs_computer(board)
 
 
