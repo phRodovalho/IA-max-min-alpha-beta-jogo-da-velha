@@ -1,6 +1,7 @@
 import time
 fat_dna_pos = 1000
 fat_dna_neg = -1000
+typegame = ""
 
 
 class Player:
@@ -79,15 +80,16 @@ def insert_letter(board, letter, position):
 
         if check_tie(board):
             print('Empate!')
-            play_again()
+            exit()
+            # play_again()
         elif victory(board):  # add computer2
             if letter == find_computer_obj().letter:
                 print('O computador ganhou!')
-            elif letter == find_human_obj().letter:
+            elif letter == find_human_obj().letter and typegame == "player":
                 print('Você ganhou!')
-            elif letter == find_computer2_obj().letter:
+            elif letter == find_computer2_obj().letter and typegame == "computer2":
                 print('O computador2 ganhou!')
-            play_again()
+            # play_again()
         return
 
     else:
@@ -206,7 +208,7 @@ def computer2_movement(board, computer):
     for key in board.keys():
         if board[key] == ' ':
             board[key] = computer.letter
-            score = minimax(board, 0, True)  # alter to true
+            score = minimax(board, 3, True)  # alter to true
             board[key] = ' '
             if score < best_score:
                 best_score = score
@@ -223,7 +225,7 @@ def computer_movement(board, computer):
     for key in board.keys():
         if board[key] == ' ':
             board[key] = computer.letter
-            score = minimax(board, 0, False)  # alter to true
+            score = minimax(board, 3, False)  # alter to true
             board[key] = ' '
             if score > best_score:
                 best_score = score
@@ -391,9 +393,11 @@ def main():
 
     if type_game:
         human_vs_computer(board)
+        typegame = "player"
     else:
         print("Computer = X VS Computer2 = 0\n")
         computer_vs_computer(board)
+        typegame = "computer2"
 
 
 if __name__ == '__main__':
