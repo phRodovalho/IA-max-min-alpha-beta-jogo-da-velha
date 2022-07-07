@@ -13,7 +13,7 @@ class Player:
         Player.players.append(self)
 
 
-def create_board():
+def create_board():  # Dict of board
     board = {
         1: ' ', 2: ' ', 3: ' ',
         4: ' ', 5: ' ', 6: ' ',
@@ -56,17 +56,6 @@ def find_human_obj():
             return player
 
 
-def play_again():
-    print('')
-    option = input(
-        'Deseja jogar novamente? Digite "s" para Sim ou qualquer tecla para encerrar: ')
-    if option == 's' or option == 'S':
-        print('')
-        main()
-    else:
-        exit()
-
-
 def delay():
     time.sleep(0.5)
 
@@ -81,7 +70,6 @@ def insert_letter(board, letter, position):
         if check_tie(board):
             print('Empate!')
             exit()
-            # play_again()
         elif victory(board):  # add computer2
             if letter == find_computer_obj().letter:
                 print('O computador ganhou!')
@@ -89,7 +77,6 @@ def insert_letter(board, letter, position):
                 print('Você ganhou!')
             elif letter == find_computer2_obj().letter and typegame == "computer2":
                 print('O computador2 ganhou!')
-            # play_again()
         return
 
     else:
